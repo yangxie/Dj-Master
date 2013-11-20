@@ -1,4 +1,4 @@
-////////// Shared code (client and server) //////////
+/z///////// Shared code (client and server) //////////
 
 Games = new Meteor.Collection('games');
 // { board: ['A','I',...], clock: 60,
