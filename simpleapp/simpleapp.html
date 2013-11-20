@@ -14,11 +14,11 @@
     {{> navigation}}
     <div id="content">
 
-    {{#if currentUser}}
-    {{> roomsTemplate}}
-    {{else}}
-    {{> loggedOutTemplate}}
-    {{/if}}
+        {{#if currentUser}}
+        {{> roomsTemplate}}
+        {{else}}
+        {{> loggedOutTemplate}}
+        {{/if}}
     </div>
 </body>
 
@@ -26,13 +26,16 @@
 
 <template name="navigation">
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<ul class="nav navbar-left" style="color:gray;font-size:20pt">
+    DJ MASTER
+    </ul>
 {{#if currentUser}}
 <ul class="nav navbar-nav navbar-right">
-    
+
     <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{currentUser.emails.0.address}}<b class="caret"></b></a>
     <ul class="dropdown-menu">
-        <li><a href="#">Action</a></li>
+        <li><a href="#">This does nothing</a></li>
         <li class="divider"></li>
         <li><a href="#" id="logout_button">Logout</a></li>
     </ul>
@@ -47,26 +50,54 @@
 
 
 <template name="roomsTemplate">
+</br>
+</br>
+</br>
+</br>
+<ul id="room-list">
+    List of rooms:
+    {{#each rooms}}
+    <li class="room">
+    <button class="join-button" data-name="{{name}}"> Join </button>
+    <span style="font-size:11pt">
+        {{name}}
+    </span>
+    <span style="font-size:8pt; color:gray">
+        Created by: {{created_by.emails.0.address}}
+    </span>
+    </li>
+    </br>
+    {{/each}}
+</ul>
+</br>
+Or you can create a new room:
+<input type="text" id="new-room"> </input>
+</template>
 
-you are logged in!!
+<template name="roomTemplate">
+</br>
+</br>
+</br>
+</br>
+Room name: {{name}}
+</br>
+</br>
+Hello!! We are here now
 </template>
 
 
-
 <template name="loggedOutTemplate">
-<body>
-    </br>
-    </br>
-    </br>
-    </br>
-    PLEASE LOG IN!!
-    <form id="login-form" action="action">
-        <div>
-            Email: <input type="email" id="login-email" /></br>
-            Password: <input type="password" id="login-password" />
-            <input type="submit" id="login-button" value="Login" />
-            <button type="button" id="
-        </div>
-    </form> 
-</body>
+</br>
+</br>
+</br>
+</br>
+PLEASE LOG IN!!
+<form id="login-form" action="action">
+    <div>
+        Email: <input type="email" id="login-email" /></br>
+        Password: <input type="password" id="login-password" />
+        <input type="submit" id="login-button" value="Login" />
+        <button type="button" id="register-button">Create Account</button>
+    </div>
+</form> 
 </template>
