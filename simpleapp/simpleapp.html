@@ -1,14 +1,31 @@
 <head>
-  <title>simpleapp</title>
+    <title>simpleapp</title>
 </head>
 
 <body>
-  {{> hello}}
+    {{> hello}}
 </body>
-
 <template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
-  {{loginButtons}}
+<h1>Hello World!</h1>
+{{greeting}}
+<input type="button" value="Click" />
+{{loginButtons}}
+{{#if currentUser}}
+{{> loggedInTemplate}}
+{{else}}
+{{> loggedOutTemplate}}
+{{/if}}
 </template>
+
+<template name="loggedInTemplate">
+you are logged in!!
+<!-- user is logged in -->
+</template>
+<template name="loggedOutTemplate">
+    <body>
+        PLEASE LOG IN!!
+    </body>
+<!-- user is logged out -->
+</template>
+
+
