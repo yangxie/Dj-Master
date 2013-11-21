@@ -10,7 +10,7 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
     <script src="http://connect.soundcloud.com/sdk.js"></script>
 
-   </head>
+</head>
 
 <body>
     {{> navigation}}
@@ -29,7 +29,7 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 <ul class="nav navbar-left" style="color:gray;font-size:20pt">
     DJ MASTER
-    </ul>
+</ul>
 {{#if currentUser}}
 <ul class="nav navbar-nav navbar-right">
 
@@ -76,19 +76,19 @@ Or you can create a new room:
 </template>
 
 <template name="roomMainTemplate">
-  <div class="room-title">
+<div class="room-title">
     {{> roomTemplate}}
-  </div>
-  </br>
+</div>
+</br>
 
-  <div id="video" class="youtube">
-  </div>
+<div id="video" class="youtube">
+</div>
 
-  <div id="add-video-form"> 
+<div id="add-video-form"> 
     Enter the Youtube video ID to add a video:
     <input type="text" id="video-id"> </input>
     <input type="submit" id="add-video-btn" class="button btn-warning"> </input>
-  </div>
+</div>
 </template>
 
 <template name="roomTemplate">
@@ -97,68 +97,69 @@ Or you can create a new room:
 <div class="member-list">
     {{#each members}}
     {{emails._id}}
-{{emails.0.address}}
-{{/each}}</br>
-<button class="leave-button btn-danger" id="leave-button" data-name="{{name}}"> Leave {{name}} </button>
+    {{emails.0.address}}
+    {{/each}}</br>
+    <button class="leave-button btn-danger" id="leave-button" data-name="{{name}}"> Leave {{name}} </button>
 </div>
 <div class="play-list">
-  <ul class="nav nav-stacked side-nav-left">
-      <br/>
-      Currently Playing: 
-<hr>
-    {{> playListTemplate}}
-  </ul>
-  <ul class="nav nav-stacked side-nav-right">
-    <br/>
-    {{> searchTemplate}}
-  </ul>
+    <ul class="nav nav-stacked side-nav-left">
+        <br/>
+        Currently Playing: 
+        (if no music playing, just refresh)
+        <hr>
+        {{> playListTemplate}}
+    </ul>
+    <ul class="nav nav-stacked side-nav-right">
+        <br/>
+        {{> searchTemplate}}
+    </ul>
 </div>
 </template>
 
 <template name="videoTemplate">
 <iframe id="ytplayer" type="text/html" width="640" height="390"
-  src="http://www.youtube.com/embed/{{id}}?autoplay=1&origin=http://example.com&start={{position}}"
-  frameborder="0"/>
-</template>
+    src="http://www.youtube.com/embed/{{id}}?autoplay=1&origin=http://example.com&start={{position}}"
+    frameborder="0"/>
+    </template>
 
-<template name="playListTemplate">
-{{#each music}}
-<li>{{name}}</li>
-<hr>
-{{/each}}
-</template>
-
-<template name="searchTemplate">
-Search for music here:
-<input type="text" id="search-box" placeholder="Search">
-<hr>
-{{> resultsAreaTemplate}}
-</template>
-
-<template name="resultsAreaTemplate">
-<div id="resultsArea">
-    {{#each results}}
-    <li>
-    <div class="songText"> {{title}} </div>
-    <button class="btn btn-xs btn-warning add-song" data-id="{{id}}" data-duration="{{duration}}" data-songname="{{title}}">Add</button>
-    </li>
+    <template name="playListTemplate">
+    {{#each music}}
+    <li>{{name}}</li>
     <hr>
     {{/each}}
-</div>
-</template>
+    </template>
 
-<template name="loggedOutTemplate">
-</br>
-</br>
-</br>
-</br>
-PLEASE LOG IN!!
-<form id="login-form" action="action">
-    <div>
-        Email: <input type="email" id="login-email" /></br>
-        Password: <input type="password" id="login-password" />
-        <input type="submit" id="login-button" value="Login" />
-        <button type="button" id="register-button">Create Account</button>
+    <template name="searchTemplate">
+    Search for music here:
+    <input type="text" id="search-box" placeholder="Search">
+    <hr>
+    {{> resultsAreaTemplate}}
+    </template>
+
+    <template name="resultsAreaTemplate">
+    <div id="resultsArea">
+        {{#each results}}
+        <li>
+        <div class="songText"> {{title}} </div>
+        <button class="btn btn-xs btn-warning add-song" data-id="{{id}}" data-duration="{{duration}}" data-songname="{{title}}">Add</button>
+        </li>
+        <hr>
+        {{/each}}
     </div>
-</form> 
-</template>
+    </template>
+
+    <template name="loggedOutTemplate">
+    </br>
+    </br>
+    </br>
+    </br>
+    PLEASE LOG IN!!
+    <form id="login-form" action="action">
+        <div>
+            Email: <input type="email" id="login-email" /></br>
+            Password: <input type="password" id="login-password" />
+            <input type="submit" id="login-button" value="Login" />
+            <button type="button" id="register-button">Create Account</button>
+        </div>
+    </form> 
+    </template>
