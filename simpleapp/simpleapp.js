@@ -1,3 +1,5 @@
+var fs = fs || {};
+
 var okCancelEvents = function (selector, callbacks) {
   var ok = callbacks.ok || function () {};
   var cancel = callbacks.cancel || function () {};
@@ -22,32 +24,9 @@ var okCancelEvents = function (selector, callbacks) {
 
   return events;
 };
-var sound = null;
+fs.sound = null;
 
-var isPlay = null;
-
-Meteor.methods({
-  playMusic: function (room, position) {
-    var music = Music.findOne({"room": room}, {timestamp: 1});
-    if (music != null) {
-      isPlay = true;
-      if (music.type == "video") {
-        var fragment = Meteor.render(function(){
-          return Template.videoTemplate({"id": music.id, "position": position});
-        });
-
-        $("#video").html(fragment);
-
-      } else {
-        SC.stream("/tracks/"+music.id, {"position": position * 1000}, function(sound){
-          window.sound = sound;
-          window.sound.play();
-        });
-      }
-    }
-  }
-});
-
+fs.isPlay = null;
 
 musicStream = new Meteor.Stream('music');
 
@@ -55,9 +34,8 @@ if (Meteor.isClient) {
   Meteor.startup(function () {
     Meteor.subscribe("allUsers");
     SC.initialize({
-      client_id: 'c9ce0709200563bfed18203750a9aa55'
+      client_id: '5c2d3c252900dbde483590be9bd8135a'
     });
-    window.isPlay = null;
   });
 
   Template.loggedOutTemplate.events({
@@ -133,11 +111,46 @@ if (Meteor.isClient) {
       musicStream.on(rname, function(message) {
         if (message == "change") {
           position = 0;
-          Meteor.call("playMusic", rname, 0);
+          var music = Music.findOne({"room": rname}, {timestamp: 1});
+          if (music != null) {
+            fs.isPlay = true;
+            if (music.type == "video") {
+              var fragment = Meteor.render(function(){
+                return Template.videoTemplate({"id": music.id, "position": 0});
+              });
+
+              $("#video").html(fragment);
+
+            } else {
+              SC.stream("/tracks/"+music.id,function(sound){
+                fs.sound = sound;
+                fs.sound.play();
+              });
+            }
+          }
+
         }else {
           position = message;
-          if (window.isPlay == null) {
-            Meteor.call("playMusic", rname, position);
+          if (fs.isPlay == null) {
+            var music = Music.findOne({"room": rname}, {timestamp: 1});
+            if (music != null) {
+              fs.isPlay = true;
+              if (music.type == "video") {
+                var fragment = Meteor.render(function(){
+                  return Template.videoTemplate({"id": music.id, "position": 0});
+                });
+
+                $("#video").html(fragment);
+
+              } else {
+                SC.stream("/tracks/"+music.id, {"position": position * 1000}, function(sound){
+                  fs.sound = sound;
+                  fs.sound.play();
+                });
+              }
+            }
+
+
           }
         }
       });
@@ -190,8 +203,8 @@ if (Meteor.isClient) {
 
   Template.roomTemplate.events({
     'click .leave-button': function(e) {
-      if (window.sound != null) {
-        window.sound.stop();
+      if (fs.sound != null) {
+        fs.sound.stop();
       }
       var rname = $(e.currentTarget).attr("data-name");
 
