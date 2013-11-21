@@ -65,7 +65,6 @@ if (Meteor.isClient) {
         'click #logout_button' : function() { 
             Meteor.logout(function() { window.location = "/";});
         }
-
     });
 
 
@@ -79,7 +78,8 @@ if (Meteor.isClient) {
       }
       Rooms.insert({
         name: name,
-        created_by: Meteor.user()
+        created_by: Meteor.user(),
+        members: []
       });
       evt.target.value = '';
     }
@@ -87,10 +87,41 @@ if (Meteor.isClient) {
 
     Template.roomsTemplate.events({
     'click .join-button': function(e) {
-        Session.set("currentRoom", $(e.currentTarget).attr("data-name"));
-        $("#content").html(Template.roomTemplate({'name': Session.get("currentRoom")}));
+        var rname = $(e.currentTarget).attr("data-name");
+        Rooms.update({_id: Rooms.findOne({name: rname})._id}, {$push: {members: Meteor.user()}});
+        Room = Rooms.findOne({name: rname});
+        console.log(Room._id);
+        console.log(Meteor.user());
+        console.log(Meteor.user().inroom);
+        Meteor.user().inroom = Room._id;
+
+        var fragment = Meteor.render( function() {  
+            return Template.roomTemplate({'name': rname});
+        });
+        $("#content").html(fragment);
+
     }});
 
+    Template.roomTemplate.events({
+    'click .leave-button': function(e) {
+        console.log("clicking leave button");
+        var rname = $(e.currentTarget).attr("data-name");
+        Rooms.update({_id: Rooms.findOne({name: rname})._id}, {$pull: {members: Meteor.user()}});
+        Room = Rooms.findOne({name: rname});
+        var fragment = Meteor.render(function() {
+            return Template.roomsTemplate();
+        });
+
+        $("#content").html(fragment);
+    }});
+
+    Template.roomTemplate.members = function(e) {
+        return 
+        rname = e.name;
+        //var rname = document.getElementById('leave-button').attr("data-name");
+        console.log(rname);
+        //return Rooms.findOne({name: rname});
+    }
 
     Template.roomsTemplate.rooms = function() { 
         return Rooms.find();
@@ -99,6 +130,10 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
     Meteor.startup(function () {
+        Accounts.onCreateUser(function(option, user) {
+            user.inroom = "";
+            return user;
+        });
         // code to run on server at startup
     });
 }
