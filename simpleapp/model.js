@@ -1,11 +1,10 @@
 ////////// Shared code (client and server) //////////
 
 Rooms = new Meteor.Collection('rooms');
-
+UserRoomLinks = new Meteor.Collection('userroomslinks');
 
 if (Meteor.isServer) {
-    Meteor.publish('rooms', function(id) {
-        check(id, String);
-        return Rooms.find({_id: id});
+    Meteor.publish("allUsers", function () {
+          return Meteor.users.find({});
     });
 }

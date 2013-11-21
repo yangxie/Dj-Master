@@ -25,6 +25,9 @@ var okCancelEvents = function (selector, callbacks) {
 
 
 if (Meteor.isClient) {
+    Meteor.startup(function () {
+        Meteor.subscribe("allUsers");
+    });
 
     Template.loggedOutTemplate.events({
 
@@ -79,7 +82,6 @@ if (Meteor.isClient) {
       Rooms.insert({
         name: name,
         created_by: Meteor.user(),
-        members: []
       });
       evt.target.value = '';
     }
@@ -88,12 +90,9 @@ if (Meteor.isClient) {
     Template.roomsTemplate.events({
     'click .join-button': function(e) {
         var rname = $(e.currentTarget).attr("data-name");
-        Rooms.update({_id: Rooms.findOne({name: rname})._id}, {$push: {members: Meteor.user()}});
-        Room = Rooms.findOne({name: rname});
-        console.log(Room._id);
-        console.log(Meteor.user());
-        console.log(Meteor.user().inroom);
-        Meteor.user().inroom = Room._id;
+        joining_room = Rooms.findOne({name: rname});
+        userlinkid = UserRoomLinks.findOne({useremail: Meteor.user().emails})._id;
+        UserRoomLink = UserRoomLinks.update({_id: userlinkid}, {$set: {room: joining_room._id}});
 
         var fragment = Meteor.render( function() {  
             return Template.roomTemplate({'name': rname});
@@ -106,8 +105,9 @@ if (Meteor.isClient) {
     'click .leave-button': function(e) {
         console.log("clicking leave button");
         var rname = $(e.currentTarget).attr("data-name");
-        Rooms.update({_id: Rooms.findOne({name: rname})._id}, {$pull: {members: Meteor.user()}});
-        Room = Rooms.findOne({name: rname});
+        
+        userlinkid = UserRoomLinks.findOne({useremail: Meteor.user().emails})._id;
+        UserRoomLink = UserRoomLinks.update({_id: userlinkid}, {$set: {room: ""}});
         var fragment = Meteor.render(function() {
             return Template.roomsTemplate();
         });
@@ -116,14 +116,22 @@ if (Meteor.isClient) {
     }});
 
     Template.roomTemplate.members = function(e) {
-        return 
-        rname = e.name;
-        //var rname = document.getElementById('leave-button').attr("data-name");
-        console.log(rname);
-        //return Rooms.findOne({name: rname});
+        
+        this_room = UserRoomLinks.findOne({useremail: Meteor.user().emails}).room;
+        console.log(this_room);
+    
+        var alluserlinks = UserRoomLinks.find({room: this_room});
+
+        a = [];
+        alluserlinks.forEach(function (alu) {
+            console.log('hi');
+            a.push(Meteor.users.findOne({emails: alu.useremail}));
+        });
+
+        return a;
     }
 
-    Template.roomsTemplate.rooms = function() { 
+    Template.roomsTemplate.rooms = function() {
         return Rooms.find();
     }
 }
@@ -131,9 +139,11 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
     Meteor.startup(function () {
         Accounts.onCreateUser(function(option, user) {
-            user.inroom = "";
+            UserRoomLinks.insert({
+              useremail: user.emails,
+              room: ""
+            });
             return user;
         });
-        // code to run on server at startup
     });
 }
