@@ -8,7 +8,9 @@
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-</head>
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
+
+   </head>
 
 <body>
     {{> navigation}}
@@ -77,17 +79,30 @@ Or you can create a new room:
 <template name="roomTemplate">
 <div class="room-name">Room name: {{name}}</div>
 
-<div class="play-list">
+<div class="left-nav">
+  <ul class="nav nav-pills">
+    <li><a href="#">Play List</a></li>
+    <li><a href="#">Add</a></li>
+  </ul>
   <ul class="nav nav-stacked side-nav">
     <br/>
-    <li>Dapibus ac facilisis in</li>
-    <li>Morbi leo risus</li>
-    <li>Porta ac consectetur ac</li>
-    <li>Vestibulum at eros</li>
+    {{> playListTemplate}}
   </ul>
 </div>
 </template>
 
+<template name="playListTemplate">
+    <li>Dapibus ac facilisis in</li>
+    <li>Morbi leo risus</li>
+    <li>Porta ac consectetur ac</li>
+    <li>Vestibulum at eros</li>
+</template>
+
+<template name="addListTemplate">
+    <li>Dapibus ac facilisis in</li>
+    <li>Morbi leo risus</li>
+</template>
+   
 
 <template name="loggedOutTemplate">
 </br>

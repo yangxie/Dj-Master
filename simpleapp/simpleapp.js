@@ -23,6 +23,24 @@ var okCancelEvents = function (selector, callbacks) {
   return events;
 };
 
+Meteor.methods({
+  playMusic: function (room, position) {
+    var music = Music.findOne({"room": room}, {timestamp: 1});
+    SC.stream("/tracks/"+music.id, {"position": position * 1000}, function(sound){
+      sound.play();
+    });
+  },
+
+  changeMusic: function (room) {
+    var music = Music.findOne({"room": room}, {timestamp: 1});
+    SC.stream("/tracks/"+music.id, function(sound){
+      sound.play();
+    });
+  }
+});
+
+
+musicStream = new Meteor.Stream('music');
 
 if (Meteor.isClient) {
 
@@ -86,19 +104,82 @@ if (Meteor.isClient) {
   }));
 
     Template.roomsTemplate.events({
-    'click .join-button': function(e) {
-        Session.set("currentRoom", $(e.currentTarget).attr("data-name"));
-        $("#content").html(Template.roomTemplate({'name': Session.get("currentRoom")}));
-    }});
+      'click .join-button': function(e) {
+        SC.initialize({
+          client_id: 'c9ce0709200563bfed18203750a9aa55'
+        });
 
+        var room = $(e.currentTarget).attr("data-name");
+        Session.set("currentRoom", room);
+        $("#content").html(Template.roomTemplate({'name': Session.get("currentRoom")}));
+        var position = 0;
+        musicStream.on("room", function(message) {
+          if (message == "change") {
+            position = 0;
+            Meteor.call("changeMusic", room);
+          }else {
+            position = message;
+          }
+        });
+        setTimeout(function(){Meteor.call("playMusic", room, position)}, 2000);
+      }
+    });
 
     Template.roomsTemplate.rooms = function() { 
         return Rooms.find();
     }
-}
+};
 
 if (Meteor.isServer) {
+    var list = {};
+
     Meteor.startup(function () {
-        // code to run on server at startup
+      var self = this;
+      var rooms = Rooms.find();
+      rooms.forEach(function(room){
+        var music = Music.findOne({"room": room.name}, {timestamp: 1});
+        list[music._id] = 0;
+      });
+/*
+        Meteor.http.get("http://api.soundcloud.com/tracks/"+music.id+".json?client_id=c9ce0709200563bfed18203750a9aa55", function (error, result) 
+        {
+          if(error) {
+            console.log('http get FAILED!');
+          } else {
+            console.log('http get SUCCES');
+            if (result.statusCode === 200) {
+              var data = JSON.parse(result.content);
+              var music = Music.insert({
+                id: 66144432,
+                room: room.name,
+                duration: data.duration,
+                timestamp: new Date().getTime()
+              });
+              list[music] = 0;
+            }
+          }
+        });
+      });
+*/
     });
+
+    Meteor.setInterval(function() {
+      var rooms = Rooms.find().fetch();
+      rooms.forEach(function(room){
+        console.log(room.name);
+        var music = Music.findOne({"room": room.name}, {timestamp: 1});
+        if (music != null) {
+          if ((list[music._id] + 1) * 1000 >= music.duration) {
+            delete list[music._id];
+            Music.remove(music);
+            var music = Music.findOne({"room": room.name}, {timestamp: 1});
+            list[music._id] = 0;
+            musicStream.emit("room", "change");
+          } else {
+            list[music._id] = list[music._id] + 1;
+            musicStream.emit("room", list[music._id]);
+          }
+        }
+      });
+    }, 1000);
 }

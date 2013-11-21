@@ -9,3 +9,6 @@ preserve-inputs
 accounts-ui
 accounts-password
 autopublish
+streams
+npm
+http
