@@ -110,25 +110,28 @@ if (Meteor.isClient) {
       var position = 0;
       musicStream.on(rname, function(message) {
         if (message == "change") {
-          position = 0;
-          var music = Music.findOne({"room": rname}, {timestamp: 1});
-          if (music != null) {
-            fs.isPlay = true;
-            if (music.type == "video") {
-              var fragment = Meteor.render(function(){
-                return Template.videoTemplate({"id": music.id, "position": 0});
-              });
+          setTimeout(function(){
+            position = 0;
+            var music = Music.findOne({"room": rname}, {timestamp: 1});
+            if (music != null) {
+              fs.isPlay = true;
+              if (music.type == "video") {
+                var fragment = Meteor.render(function(){
+                  return Template.videoTemplate({"id": music.id, "position": 0});
+                });
 
-              $("#video").html(fragment);
+                $("#video").html(fragment);
 
-            } else {
-              SC.stream("/tracks/"+music.id,function(sound){
-                fs.sound = sound;
-                fs.sound.play();
-              });
+              } else {
+                SC.stream("/tracks/"+music.id,function(sound){
+                  fs.sound = sound;
+                  fs.sound.play();
+                });
+              }
             }
-          }
 
+
+            }, 500);
         }else {
           position = message;
           if (fs.isPlay == null) {
@@ -137,7 +140,7 @@ if (Meteor.isClient) {
               fs.isPlay = true;
               if (music.type == "video") {
                 var fragment = Meteor.render(function(){
-                  return Template.videoTemplate({"id": music.id, "position": 0});
+                  return Template.videoTemplate({"id": music.id, "position": position});
                 });
 
                 $("#video").html(fragment);
@@ -175,6 +178,7 @@ if (Meteor.isClient) {
             room: roomname,
             duration: duration * 1000,
             name: name,
+            type: "video",
             timestamp: new Date().getTime()
           })
         }
@@ -292,7 +296,7 @@ if (Meteor.isServer) {
           Music.remove(music);
           var music = Music.findOne({"room": room.name}, {timestamp: 1});
           list[music._id] = 0;
-          musicStream.emit("room", "change");
+          musicStream.emit(room.name, "change");
         } else {
           list[music._id] = list[music._id] + 1;
           musicStream.emit(room.name, list[music._id]);
