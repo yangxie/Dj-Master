@@ -109,9 +109,14 @@ Or you can create a new room:
 <button class="leave-button" id="leave-button" data-name="{{name}}"> Leave {{name}} </button>
 </div>
 <div class="play-list">
-  <ul class="nav nav-stacked side-nav">
-    <br/>
+  <ul class="nav nav-stacked side-nav-left">
+      <br/>
+      Currently Playing: 
     {{> playListTemplate}}
+  </ul>
+  <ul class="nav nav-stacked side-nav-right">
+    <br/>
+    {{> searchTemplate}}
   </ul>
 </div>
 </template>
@@ -123,10 +128,15 @@ Or you can create a new room:
 </template>
 
 <template name="playListTemplate">
-    <li>Dapibus ac facilisis in</li>
-    <li>Morbi leo risus</li>
-    <li>Porta ac consectetur ac</li>
-    <li>Vestibulum at eros</li>
+{{#each music}}
+<li>{{name}}</li>
+<hr>
+{{/each}}
+</template>
+
+<template name="searchTemplate">
+<input type="text" id="search-box" placeholder="Search">
+{{> resultsAreaTemplate}}
 </template>
 
 <template name="addListTemplate">
@@ -134,6 +144,14 @@ Or you can create a new room:
     <li>Morbi leo risus</li>
 </template>
    
+<template name="resultsAreaTemplate">
+<div id="resultsArea">
+    {{#each results}}
+    <li><div class="songText"> {{title}} </div><button type="button" class="btn btn-xs btn-warning add-song" data-id="{{id}}" data-duration="{{duration}}" data-songname="{{title}}">Add</button></li>
+    <hr>
+    {{/each}}
+</div>
+</template>
 
 <template name="loggedOutTemplate">
 </br>
