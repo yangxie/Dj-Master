@@ -1,4 +1,5 @@
 var fs = fs || {};
+var count = 0;
 
 var okCancelEvents = function (selector, callbacks) {
   var ok = callbacks.ok || function () {};
@@ -188,8 +189,8 @@ if (Meteor.isClient) {
       var roomname = UserRoomLinks.findOne({useremail: Meteor.user().emails}).roomname;
       var song_duration = $(e.currentTarget).attr('data-duration');
       var song_name = $(e.currentTarget).attr('data-songname');
-      if (!Music.findOne({id: song_id, room: roomname})){
-
+      count+=1;
+      if (count % 2){
           var music = Music.insert({
               id: song_id,
               room: roomname,
