@@ -184,20 +184,21 @@ if (Meteor.isClient) {
 
   Template.resultsAreaTemplate.events({
     'click .add-song': function(e) {
-      console.log("in add song");
       var song_id = $(e.currentTarget).attr('data-id');
       var roomname = UserRoomLinks.findOne({useremail: Meteor.user().emails}).roomname;
       var song_duration = $(e.currentTarget).attr('data-duration');
       var song_name = $(e.currentTarget).attr('data-songname');
+      if (!Music.findOne({id: song_id, room: roomname})){
 
-      var music = Music.insert({
-        id: song_id,
-          room: roomname,
-          duration: song_duration,
-          timestamp: new Date().getTime(),
-          name: song_name,
-          type: "audio"
-      });
+          var music = Music.insert({
+              id: song_id,
+              room: roomname,
+              duration: song_duration,
+              timestamp: new Date().getTime(),
+              name: song_name,
+              type: "audio"
+          });
+      }
     }
   });
 
@@ -255,7 +256,6 @@ if (Meteor.isClient) {
         }));
 
   Template.resultsAreaTemplate.results = function() {
-    console.log("inside looking for results");
     return window.searchResults;
   }
 }

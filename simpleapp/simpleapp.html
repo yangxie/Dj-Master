@@ -112,6 +112,7 @@ Or you can create a new room:
   <ul class="nav nav-stacked side-nav-left">
       <br/>
       Currently Playing: 
+<hr>
     {{> playListTemplate}}
   </ul>
   <ul class="nav nav-stacked side-nav-right">
@@ -139,15 +140,13 @@ Or you can create a new room:
 {{> resultsAreaTemplate}}
 </template>
 
-<template name="addListTemplate">
-    <li>Dapibus ac facilisis in</li>
-    <li>Morbi leo risus</li>
-</template>
-   
 <template name="resultsAreaTemplate">
 <div id="resultsArea">
     {{#each results}}
-    <li><div class="songText"> {{title}} </div><button type="button" class="btn btn-xs btn-warning add-song" data-id="{{id}}" data-duration="{{duration}}" data-songname="{{title}}">Add</button></li>
+    <li>
+    <div class="songText"> {{title}} </div>
+    <button class="btn btn-xs btn-warning add-song" data-id="{{id}}" data-duration="{{duration}}" data-songname="{{title}}">Add</button>
+    </li>
     <hr>
     {{/each}}
 </div>
