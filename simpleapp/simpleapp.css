@@ -56,5 +56,18 @@
 }
 
 .songText  {
-    text-size:8pt;
+    font-size:9pt;
+}
+
+.playlistText { 
+    font-size:9pt;
+}
+
+.playlistHeader {
+    font-size:14pt;
+}
+
+.currentlyPlaying {
+    font-size:12pt;
+    color: orange;
 }
