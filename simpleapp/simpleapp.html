@@ -92,13 +92,6 @@ Or you can create a new room:
 </template>
 
 <template name="roomTemplate">
-<div class="room-name">Room name: {{name}}</div>
-
-<div class="left-nav">
-  <ul class="nav nav-pills">
-    <li><a href="#">Play List</a></li>
-    <li><a href="#">Add</a></li>
-  </ul>
 <div class="room-name">Room name: {{name}}</div></br>
 <div class="member-list">Members in room:</div>
 <div class="member-list">
@@ -106,7 +99,7 @@ Or you can create a new room:
     {{emails._id}}
 {{emails.0.address}}
 {{/each}}</br>
-<button class="leave-button" id="leave-button" data-name="{{name}}"> Leave {{name}} </button>
+<button class="leave-button btn-danger" id="leave-button" data-name="{{name}}"> Leave {{name}} </button>
 </div>
 <div class="play-list">
   <ul class="nav nav-stacked side-nav-left">
@@ -136,7 +129,9 @@ Or you can create a new room:
 </template>
 
 <template name="searchTemplate">
+Search for music here:
 <input type="text" id="search-box" placeholder="Search">
+<hr>
 {{> resultsAreaTemplate}}
 </template>
 
