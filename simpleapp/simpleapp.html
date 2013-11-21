@@ -57,7 +57,7 @@
 </br>
 </br>
 <ul id="room-list">
-    List of rooms:
+    List of {{rooms.length}} rooms:
     {{#each rooms}}
     <li class="room">
     <button class="join-button" data-name="{{name}}"> Join </button>
@@ -84,6 +84,16 @@ Or you can create a new room:
     <li><a href="#">Play List</a></li>
     <li><a href="#">Add</a></li>
   </ul>
+<div class="room-name">Room name: {{name}}</div></br>
+<div class="member-list">Members in room:</div>
+<div class="member-list">
+    {{#each members}}
+    {{emails._id}}
+{{emails.0.address}}
+{{/each}}</br>
+<button class="leave-button" id="leave-button" data-name="{{name}}"> Leave {{name}} </button>
+</div>
+<div class="play-list">
   <ul class="nav nav-stacked side-nav">
     <br/>
     {{> playListTemplate}}
