@@ -140,7 +140,9 @@ if (Meteor.isClient) {
     'click .leave-button': function(e) {
       console.log("clicking leave button");
       console.log(window.sound);
-      window.sound.stop();
+      if (window.sound != null) {
+        window.sound.stop();
+      }
       var rname = $(e.currentTarget).attr("data-name");
 
       userlinkid = UserRoomLinks.findOne({useremail: Meteor.user().emails})._id;
