@@ -15,7 +15,6 @@
 <body>
     {{> navigation}}
     <div id="content">
-
         {{#if currentUser}}
         {{> roomsTemplate}}
         {{else}}
@@ -76,6 +75,22 @@ Or you can create a new room:
 <input type="text" id="new-room"> </input>
 </template>
 
+<template name="roomMainTemplate">
+  <div class="room-title">
+    {{> roomTemplate}}
+  </div>
+  </br>
+
+  <div id="video" class="youtube">
+  </div>
+
+  <div id="add-video-form"> 
+    Enter the Youtube video ID to add a video:
+    <input type="text" id="video-id"> </input>
+    <input type="submit" id="add-video-btn" class="button btn-warning"> </input>
+  </div>
+</template>
+
 <template name="roomTemplate">
 <div class="room-name">Room name: {{name}}</div>
 
@@ -99,6 +114,12 @@ Or you can create a new room:
     {{> playListTemplate}}
   </ul>
 </div>
+</template>
+
+<template name="videoTemplate">
+<iframe id="ytplayer" type="text/html" width="640" height="390"
+  src="http://www.youtube.com/embed/{{id}}?autoplay=1&origin=http://example.com&start={{position}}"
+  frameborder="0"/>
 </template>
 
 <template name="playListTemplate">

@@ -23,23 +23,27 @@ var okCancelEvents = function (selector, callbacks) {
   return events;
 };
 var sound = null;
+var isPlay = null;
 Meteor.methods({
   playMusic: function (room, position) {
-               var self = this;
-               var music = Music.findOne({"room": room}, {timestamp: 1});
-               SC.stream("/tracks/"+music.id, {"position": position * 1000}, function(sound){
-                 window.sound = sound;
-                 window.sound.play();
-               });
-             },
+    var music = Music.findOne({"room": room}, {timestamp: 1});
+    if (music != null) {
+      window.isPlay = true;
+      if (music.type == "video") {
+        var fragment = Meteor.render(function(){
+          return Template.videoTemplate({"id": music.id, "position": position});
+        });
 
-  changeMusic: function (room) {
-                 var music = Music.findOne({"room": room}, {timestamp: 1});
-                 SC.stream("/tracks/"+music.id, function(sound){
-                   window.sound = sound;
-                   window.sound.play();
-                 });
-               }
+        $("#video").html(fragment);
+ 
+      } else {
+        SC.stream("/tracks/"+music.id, {"position": position * 1000}, function(sound){
+          window.sound = sound;
+          window.sound.play();
+        });
+      }
+    }
+  }
 });
 
 
@@ -120,19 +124,46 @@ if (Meteor.isClient) {
       UserRoomLink = UserRoomLinks.update({_id: userlinkid}, {$set: {room: joining_room._id}});
 
       var fragment = Meteor.render( function() {  
-        return Template.roomTemplate({'name': rname});
+        return Template.roomMainTemplate({'name': rname});
       });
       $("#content").html(fragment);
       var position = 0;
-      musicStream.on("room", function(message) {
+      musicStream.on(rname, function(message) {
         if (message == "change") {
           position = 0;
-          Meteor.call("changeMusic", rname);
+          Meteor.call("playMusic", rname, 0);
         }else {
           position = message;
+          if (window.isPlay == null) {
+            Meteor.call("playMusic", rname, position);
+          }
         }
       });
-      setTimeout(function(){Meteor.call("playMusic", rname, position)}, 2000);
+    }
+  });
+
+  Template.roomMainTemplate.events({
+    'click #add-video-btn': function(e, t) {
+      e.preventDefault();
+      // retrieve the input field values
+      var video_id = t.find('#video-id').value;
+      Meteor.http.get("https://gdata.youtube.com/feeds/api/videos/" + video_id + "?v=2&alt=json", function (error, result) {
+        if(error) {
+          console.log('http get FAILED!');
+        } else {
+          var data = JSON.parse(result.content);
+          var name = data.entry.title.$t;
+          var duration = data.entry.media$group.media$content[0].duration;
+          var roomname = UserRoomLinks.findOne({useremail: Meteor.user().emails}).roomname; 
+          Music.insert({
+            id: video_id,
+            room: roomname,
+            duration: duration * 1000,
+            name: name,
+            timestamp: new Date().getTime()
+          })
+        }
+      });
     }
   });
 
@@ -147,11 +178,13 @@ if (Meteor.isClient) {
 
       userlinkid = UserRoomLinks.findOne({useremail: Meteor.user().emails})._id;
       UserRoomLink = UserRoomLinks.update({_id: userlinkid}, {$set: {room: ""}});
+      
       var fragment = Meteor.render(function() {
         return Template.roomsTemplate();
       });
 
       $("#content").html(fragment);
+ 
     }});
 
   Template.roomTemplate.members = function(e) {
@@ -183,7 +216,9 @@ if (Meteor.isServer) {
     var rooms = Rooms.find();
     rooms.forEach(function(room){
       var music = Music.findOne({"room": room.name}, {timestamp: 1});
-      list[music._id] = 0;
+      if (music != null) {
+        list[music._id] = 0;
+      }
     });
     /*
        Meteor.http.get("http://api.soundcloud.com/tracks/"+music.id+".json?client_id=c9ce0709200563bfed18203750a9aa55", function (error, result) 
@@ -229,7 +264,7 @@ Meteor.setInterval(function() {
         musicStream.emit("room", "change");
       } else {
         list[music._id] = list[music._id] + 1;
-        musicStream.emit("room", list[music._id]);
+        musicStream.emit(room.name, list[music._id]);
       }
     }
   });
