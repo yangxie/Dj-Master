@@ -38,9 +38,9 @@ if (Meteor.isClient) {
       client_id: '5c2d3c252900dbde483590be9bd8135a'
     });
 
-    console.log(Meteor.user());
-    userlink = UserRoomLinks.findOne({useremail: Meteor.user().emails});
     Meteor.setTimeout(function() {
+        console.log(Meteor.user());
+        userlink = UserRoomLinks.findOne({useremail: Meteor.user().emails});
         if (userlink.roomname != "") {
 
             var rname = userlink.roomname;
@@ -363,8 +363,10 @@ if (Meteor.isServer) {
           delete list[music._id];
           Music.remove(music);
           var music = Music.findOne({"room": room.name}, {timestamp: 1});
-          list[music._id] = 0;
-          musicStream.emit(room.name, "change");
+          if (music != null) {
+              list[music._id] = 0;
+              musicStream.emit(room.name, "change");
+          }
         } else {
           list[music._id] = list[music._id] + 1;
           musicStream.emit(room.name, list[music._id]);
