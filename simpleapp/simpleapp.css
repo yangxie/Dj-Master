@@ -1,1 +1,24 @@
 /* CSS declarations go here */
+#content {
+    margin-top: 60px;
+}
+.room-name {
+    text-align:center;
+}
+
+.side-nav {
+    text-align:center;
+	margin-left: -225px;
+    line-height: 50px;
+	left: 225px;
+	width: 200px;
+	position: fixed;
+	top: 50px;
+	height: 100%;
+	border-radius: 0;
+	border: none;
+	background-color: #222222;
+	overflow-y: auto;
+    color:#FFF;
+    font-size:15px;
+}
