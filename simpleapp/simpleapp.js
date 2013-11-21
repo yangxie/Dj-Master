@@ -291,6 +291,9 @@ if (Meteor.isServer) {
     rooms.forEach(function(room){
       var music = Music.findOne({"room": room.name}, {timestamp: 1});
       if (music != null) {
+        if (list[music._id] == undefined) {
+          list[music._id] = 0;
+        }
         if ((list[music._id] + 1) * 1000 >= music.duration) {
           delete list[music._id];
           Music.remove(music);
